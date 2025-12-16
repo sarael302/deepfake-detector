@@ -15,8 +15,11 @@ A high-accuracy deepfake detection system using fine-tuned Xception CNN with vis
 
 # Clone & install
 git clone https://github.com/sarael302/deepfake-detector
+
 cd deepfake-detector
+
 pip install -r requirements.txt
+
 
 # Start API
 python app/inference_api.py
@@ -56,31 +59,6 @@ python app/inference_api.py
 **Training:** Two-phase transfer learning  
 **Parameters:** 21.4M total, 524K trainable  
 **Head:** GlobalAvgPool → Dense(256) → Dropout → Sigmoid
-
-
-┌─────────┐     ┌─────────────┐     ┌─────────────┐
-│  Image  │ ──▶ │ Preprocess  │ ──▶ │  Xception   │
-└─────────┘     └─────────────┘     └─────────────┘
-                                              │
-┌─────────┐     ┌─────────────┐     ┌─────────────┐
-│  Web UI │ ◀──▶ │  FastAPI   │ ◀─── │ Prediction │
-└─────────┘     └─────────────┘     └─────────────┘
-                                              │
-                                      ┌─────────────┐
-                                      │  Grad-CAM   │
-                                      └─────────────┘
-                                      
-Project Structure
-
-DEEPFAKE-DETECTOR/
-├── app/inference_api.py          # FastAPI server
-├── src/train_xception.py         # Training pipeline
-├── src/gradcam_xception.py       # Visual explanations
-├── dataset/                      # Real/Fake images
-├── figures/                      # Results & plots
-├── test.html                     # Web interface
-├── best_xception.h5              # Trained model
-└── requirements.txt              # Dependencies
 
 
 ## Usage
