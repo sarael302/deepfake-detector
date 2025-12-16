@@ -45,8 +45,8 @@ python app/inference_api.py
 | Inference Speed | ~45ms/image |
 
 ### Visualizations
-| Accuracy/Loss | ROC Curve | Grad-CAM Examples |
-|---------------|-----------|-------------------|
+| Accuracy/Loss | ROC Curve | Grad-CAM Real | Grad-CAM Fake |
+|---------------|-----------|-------------------|-------------------|
 | ![Accuracy Curve](figures/accuracy_curve.png) | ![ROC Curve](figures/roc_curve.png) | ![Grad-CAM Real](figures/gradcam_real.png) | ![Grad-CAM Fake](figures/gradcam_fake.png) |
 
 ## Architecture
@@ -142,9 +142,3 @@ MIT License - see [LICENSE](LICENSE) file.
 Department of Computer Engineering and Networks, EMSI Rabat, Morocco
 
 
-
-
-
-3. **Minimal but complete** - covers all necessary aspects
-4. **Mobile-friendly** with clean table formatting
-5. **Includes critical figures** that show model performance at a glance
