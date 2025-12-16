@@ -47,7 +47,7 @@ python app/inference_api.py
 ### Visualizations
 | Accuracy/Loss | ROC Curve | Grad-CAM Examples |
 |---------------|-----------|-------------------|
-| ![Accuracy Curve](figures/accuracy_curve.png) | ![ROC Curve](figures/roc_curve.png) | ![Grad-CAM](figures/gradcam_comparison.png) |
+| ![Accuracy Curve](figures/accuracy_curve.png) | ![ROC Curve](figures/roc_curve.png) | ![Grad-CAM](figures/gradcam_real.png | ![Grad-CAM](figures/gradcam_fake.png) |
 
 ## Architecture
 
