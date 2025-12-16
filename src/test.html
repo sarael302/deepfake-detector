@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Deepfake Detector</title>
+<style>
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+
+    body {
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 20px;
+    }
+
+    .container {
+        background: white;
+        border-radius: 16px;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        padding: 40px;
+        max-width: 500px;
+        width: 100%;
+    }
+
+    h2 {
+        color: #1a202c;
+        font-size: 28px;
+        font-weight: 700;
+        margin-bottom: 8px;
+        text-align: center;
+    }
+
+    .subtitle {
+        color: #718096;
+        font-size: 14px;
+        text-align: center;
+        margin-bottom: 32px;
+    }
+
+    .upload-area {
+        border: 2px dashed #cbd5e0;
+        border-radius: 12px;
+        padding: 40px 20px;
+        text-align: center;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        margin-bottom: 24px;
+        background: #f7fafc;
+    }
+
+    .upload-area:hover {
+        border-color: #667eea;
+        background: #edf2f7;
+    }
+
+    .upload-area.has-file {
+        padding: 0;
+        border: none;
+        background: transparent;
+    }
+
+    #imageInput {
+        display: none;
+    }
+
+    .upload-prompt {
+        color: #4a5568;
+        font-size: 16px;
+        font-weight: 500;
+        margin-bottom: 8px;
+    }
+
+    .upload-hint {
+        color: #a0aec0;
+        font-size: 13px;
+    }
+
+    #preview {
+        max-width: 100%;
+        border-radius: 12px;
+        display: none;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
+
+    #preview.visible {
+        display: block;
+    }
+
+    button {
+        width: 100%;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        border: none;
+        padding: 16px;
+        border-radius: 12px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+    }
+
+    button:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
+    }
+
+    button:active {
+        transform: translateY(0);
+    }
+
+    button:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+        transform: none;
+    }
+
+    #result {
+        margin-top: 24px;
+        padding: 20px;
+        border-radius: 12px;
+        display: none;
+        animation: slideIn 0.3s ease;
+    }
+
+    #result.visible {
+        display: block;
+    }
+
+    #result.real {
+        background: #c6f6d5;
+        border: 2px solid #48bb78;
+        color: #22543d;
+    }
+
+    #result.fake {
+        background: #fed7d7;
+        border: 2px solid #f56565;
+        color: #742a2a;
+    }
+
+    #result.processing {
+        background: #feebc8;
+        border: 2px solid #ed8936;
+        color: #7c2d12;
+    }
+
+    .result-label {
+        font-size: 20px;
+        font-weight: 700;
+        margin-bottom: 8px;
+    }
+
+    .result-confidence {
+        font-size: 16px;
+        font-weight: 500;
+    }
+
+    .confidence-bar {
+        height: 8px;
+        background: rgba(0, 0, 0, 0.1);
+        border-radius: 4px;
+        margin-top: 12px;
+        overflow: hidden;
+    }
+
+    .confidence-fill {
+        height: 100%;
+        background: currentColor;
+        border-radius: 4px;
+        transition: width 0.5s ease;
+    }
+
+    @keyframes slideIn {
+        from {
+            opacity: 0;
+            transform: translateY(-10px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .icon {
+        font-size: 48px;
+        margin-bottom: 16px;
+    }
+</style>
+</head>
+<body>
+
+<div class="container">
+    <h2>Deepfake Detector</h2>
+    <p class="subtitle">Upload an image to verify its authenticity</p>
+
+    <label for="imageInput">
+        <div class="upload-area" id="uploadArea">
+            <div id="uploadPrompt">
+                <div class="icon">📸</div>
+                <div class="upload-prompt">Click to upload image</div>
+                <div class="upload-hint">PNG, JPG, or JPEG</div>
+            </div>
+            <img id="preview" />
+        </div>
+    </label>
+    <input type="file" id="imageInput" accept="image/*">
+
+    <button onclick="detect()" id="detectBtn">Analyze Image</button>
+
+    <div id="result"></div>
+</div>
+
+<script>
+function detect() {
+    const fileInput = document.getElementById("imageInput");
+    const file = fileInput.files[0];
+    const resultDiv = document.getElementById("result");
+    const detectBtn = document.getElementById("detectBtn");
+
+    if (!file) {
+        alert("Please upload an image first!");
+        return;
+    }
+
+    const formData = new FormData();
+    formData.append("file", file);
+
+    resultDiv.className = "processing visible";
+    resultDiv.innerHTML = '<div class="result-label">🔍 Analyzing...</div><div class="result-confidence">Please wait while we process your image</div>';
+    detectBtn.disabled = true;
+
+    fetch("http://127.0.0.1:8000/predict", {
+        method: "POST",
+        body: formData
+    })
+    .then(res => res.json())
+    .then(data => {
+        const confidence = (data.confidence * 100).toFixed(1);
+        const isReal = data.label.toLowerCase().includes("real");
+        
+        resultDiv.className = isReal ? "real visible" : "fake visible";
+        
+        const icon = isReal ? "✅" : "⚠️";
+        const labelText = isReal ? "Real Image" : "Deepfake Detected";
+        
+        resultDiv.innerHTML = `
+            <div class="result-label">${icon} ${labelText}</div>
+            <div class="result-confidence">Confidence: ${confidence}%</div>
+            <div class="confidence-bar">
+                <div class="confidence-fill" style="width: ${confidence}%"></div>
+            </div>
+        `;
+        
+        detectBtn.disabled = false;
+    })
+    .catch(err => {
+        resultDiv.className = "fake visible";
+        resultDiv.innerHTML = '<div class="result-label">❌ Error</div><div class="result-confidence">Failed to analyze image. Please try again.</div>';
+        detectBtn.disabled = false;
+    });
+}
+
+document.getElementById("imageInput").addEventListener("change", function () {
+    const file = this.files[0];
+    const preview = document.getElementById("preview");
+    const uploadArea = document.getElementById("uploadArea");
+    const uploadPrompt = document.getElementById("uploadPrompt");
+
+    if (file) {
+        preview.src = URL.createObjectURL(file);
+        preview.classList.add("visible");
+        uploadArea.classList.add("has-file");
+        uploadPrompt.style.display = "none";
+        
+        // Reset result when new image is uploaded
+        const resultDiv = document.getElementById("result");
+        resultDiv.classList.remove("visible");
+    }
+});
+</script>
+
+</body>
+</html>
