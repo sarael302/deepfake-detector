@@ -69,10 +69,8 @@ python app/inference_api.py
                                       ┌─────────────┐
                                       │  Grad-CAM   │
                                       └─────────────┘
-
-
-## Project Structure
-
+                                      
+Project Structure
 
 DEEPFAKE-DETECTOR/
 ├── app/inference_api.py          # FastAPI server
