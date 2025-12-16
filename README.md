@@ -14,7 +14,7 @@ A high-accuracy deepfake detection system using fine-tuned Xception CNN with vis
 
 
 # Clone & install
-git clone https://github.com/yourusername/deepfake-detector.git
+git clone https://github.com/sarael302/deepfake-detector
 cd deepfake-detector
 pip install -r requirements.txt
 
